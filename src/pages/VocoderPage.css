@@ -227,6 +227,33 @@
   color: #fff;
 }
 
+.position-inputs {
+  display: flex;
+  gap: 1rem;
+}
+
+.position-input {
+  width: 80px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.position-input:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.position-input::-webkit-inner-spin-button,
+.position-input::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
 .create-vocoder-btn {
   padding: 0.75rem 2rem;
   border: none;

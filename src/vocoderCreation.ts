@@ -168,11 +168,10 @@ export function createCentroidWithChannels(
  */
 export function createVocoderSystem(
   t: SafeTransactionBuilder,
-  bandCount: number
+  bandCount: number,
+  baseX: number = 0,
+  baseY: number = 0
 ): void {
-  const baseX = 0;
-  const baseY = 0;
-
   // Create vocal splitter tree (top)
   const { splitters: vocalSplitters, outputs: vocalOutputs } =
     createInputSplitterTree(

@@ -17,6 +17,8 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isCreatingVocoder, setIsCreatingVocoder] = useState(false)
   const [bandCount, setBandCount] = useState<number>(9)
+  const [positionX, setPositionX] = useState<number>(0)
+  const [positionY, setPositionY] = useState<number>(0)
   const hasStartedConnecting = useRef(false)
 
   useEffect(() => {
@@ -58,9 +60,9 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
 
     setIsCreatingVocoder(true)
     await document.modify((t) => {
-      createVocoderSystem(t, bandCount)
+      createVocoderSystem(t, bandCount, positionX, positionY)
     })
-    console.log(`Created ${bandCount}-band vocoder with dual splitter trees and centroid output`)
+    console.log(`Created ${bandCount}-band vocoder at (${positionX}, ${positionY}) with dual splitter trees and centroid output`)
     setIsCreatingVocoder(false)
   }
 
@@ -151,6 +153,31 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="position-inputs">
+              <div className="control-group">
+                <label htmlFor="position-x">X:</label>
+                <input
+                  id="position-x"
+                  type="number"
+                  value={positionX}
+                  onChange={(e) => setPositionX(Number(e.target.value))}
+                  disabled={isCreatingVocoder}
+                  className="position-input"
+                />
+              </div>
+              <div className="control-group">
+                <label htmlFor="position-y">Y:</label>
+                <input
+                  id="position-y"
+                  type="number"
+                  value={positionY}
+                  onChange={(e) => setPositionY(Number(e.target.value))}
+                  disabled={isCreatingVocoder}
+                  className="position-input"
+                />
+              </div>
             </div>
 
             <button
