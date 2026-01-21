@@ -59,6 +59,10 @@ export function generateFrequencies(
   return frequencies;
 }
 
+const centroidHeight = 500;
+const splitterSize = 180;
+const numberOfRows = 9;
+
 /**
  * Create input splitter tree that splits one input into the specified number of outputs
  * Returns both the tree and the final outputs
@@ -82,19 +86,14 @@ export function createInputSplitterTree(
     const newSplitters: NexusEntity<"audioSplitter">[] = [];
 
     for (let i = 0; i < splittersInLevel; i++) {
-      const splitter = t.create("audioSplitter", {});
+      // Position splitter in tree formation
+      const splitter = t.create("audioSplitter", {
+        displayName: `${treeId} ${levelIndex + 1}-${i + 1}`,
+        positionX: baseX + levelIndex * splitterSize,
+        positionY: baseY + i * splitterSize, // Center around baseY,
+      });
       allSplitters.push(splitter);
       newSplitters.push(splitter);
-
-      // Position splitter in tree formation
-      const x = baseX + levelIndex * 200;
-      const y = baseY + (i - (splittersInLevel - 1) / 2) * 150; // Center around baseY
-
-      t.create("desktopPlacement", {
-        entity: splitter.location,
-        x,
-        y,
-      });
 
       // Connect from previous level (except first level)
       if (levelIndex > 0) {
@@ -108,7 +107,7 @@ export function createInputSplitterTree(
             : "audioOutputC";
 
         if (currentSplitters[parentIndex]) {
-          t.create("audioConnection", {
+          t.create("desktopAudioCable", {
             fromSocket:
               currentSplitters[parentIndex].fields[outputField].location,
             toSocket: splitter.fields.audioInput.location,
@@ -146,19 +145,17 @@ export function createCentroidWithChannels(
   centroid: NexusEntity<"centroid">;
   channels: NexusEntity<"centroidChannel">[];
 } {
-  const centroid = t.create("centroid", {});
-  t.create("desktopPlacement", {
-    entity: centroid.location,
-    x,
-    y,
+  const centroid = t.create("centroid", {
+    positionX: x,
+    positionY: y,
   });
 
   const channels: NexusEntity<"centroidChannel">[] = [];
   for (let i = 0; i < bandCount; i++) {
     const channel = t.create("centroidChannel", {
       centroid: centroid.location,
-      index: i,
-      name: `Band ${i + 1}`,
+      orderAmongChannels: i,
+      displayName: `Band ${i + 1}`,
     });
     channels.push(channel);
   }
@@ -173,13 +170,16 @@ export function createVocoderSystem(
   t: SafeTransactionBuilder,
   bandCount: number
 ): void {
+  const baseX = 0;
+  const baseY = 0;
+
   // Create vocal splitter tree (top)
   const { splitters: vocalSplitters, outputs: vocalOutputs } =
     createInputSplitterTree(
       t,
       bandCount,
-      250, // X position for vocal tree
-      0, // Y position for vocal tree (centered)
+      baseX, // X position for vocal tree
+      baseY + centroidHeight, // Y position for vocal tree (centered)
       "vocal"
     );
 
@@ -188,17 +188,62 @@ export function createVocoderSystem(
     createInputSplitterTree(
       t,
       bandCount,
-      250, // X position for carrier tree
-      -200, // Y position for carrier tree (below vocal)
+      baseX, // X position for carrier tree
+      baseY + (bandCount / 3) * splitterSize + centroidHeight, // Y position for carrier tree (below vocal)
       "carrier"
     );
+
+  // Create AudioDevice for vocal input and connect to first vocal splitter
+  const audioDevice = t.create("audioDevice", {
+    displayName: "Vocal Input",
+    positionX: baseX - 200,
+    positionY: baseY + centroidHeight,
+  });
+
+  t.create("desktopAudioCable", {
+    fromSocket: audioDevice.fields.audioOutput.location,
+    toSocket: vocalSplitters[0].fields.audioInput.location,
+  });
+
+  // Create Heisenberg for carrier input and connect to first carrier splitter
+  const heisenberg = t.create("heisenberg", {
+    displayName: "Carrier Synth",
+    positionX: baseX - 800,
+    positionY: baseY + (bandCount / 3) * splitterSize + centroidHeight,
+    operatorA: {
+      gain: 1,
+      waveformIndex: 7,
+      modulationFactorB: 0.24,
+    },
+    operatorC: {
+      waveformIndex: 5,
+      gain: 1,
+      detuneFactor: 0.5, // -12 semitones
+    },
+    operatorD: {
+      waveformIndex: 6,
+      gain: 0.75,
+      detuneFactor: 2, // +12 semitones
+    },
+    envelopeMain: {
+      sustainFactor: 1,
+    },
+    filter: {
+      cutoffFrequencyHz: 22050,
+    },
+  });
+
+  t.create("desktopAudioCable", {
+    fromSocket: heisenberg.fields.audioOutput.location,
+    toSocket: carrierSplitters[0].fields.audioInput.location,
+  });
 
   // Create centroid for final mixing (far right)
   const { centroid, channels } = createCentroidWithChannels(
     t,
     bandCount,
-    3200, // Much farther right after all processing
-    0 // Centered vertically
+    baseX + splitterSize * Math.floor(Math.cbrt(bandCount)), // Much farther right after all processing
+    baseY
   );
 
   // Generate frequencies
@@ -207,34 +252,33 @@ export function createVocoderSystem(
   // Create bands in rows
   for (let i = 0; i < bandCount; i++) {
     // Calculate positions for this row
-    const rowY = -300 + i * 600; // Start above center, space rows
+    const rowStart =
+      baseX +
+      splitterSize * Math.floor(Math.cbrt(bandCount)) +
+      Math.floor(i / numberOfRows) * 710;
+    const rowY = baseY + centroidHeight + (i % numberOfRows) * 600; // Start above center, space rows
 
     // Create carrier slope for this band
     const carrierSlope = t.create("stompboxSlope", {
+      displayName: `Carrier Slope ${frequencies[i]} Hz`,
+      positionX: rowStart, // After carrier tree
+      positionY: rowY + 300,
       frequencyHz: frequencies[i],
       resonanceFactor: 0.78,
-      filterMode: 4,
-    });
-
-    t.create("desktopPlacement", {
-      entity: carrierSlope.location,
-      x: 800, // After carrier tree
-      y: rowY,
+      filterModeIndex: 4,
     });
 
     // Connect carrier output to carrier slope
-    t.create("audioConnection", {
+    t.create("desktopAudioCable", {
       fromSocket: carrierOutputs[i],
       toSocket: carrierSlope.fields.audioInput.location,
     });
 
     // Create final ring modulator for this band
-    const finalRingMod = t.create("ringModulator", { boostGain: 7.9433 });
-
-    t.create("desktopPlacement", {
-      entity: finalRingMod.location,
-      x: 2300, // Near the end of the chain
-      y: rowY,
+    const finalRingMod = t.create("ringModulator", {
+      positionX: rowStart + 550,
+      positionY: rowY + 350,
+      gain: 7.943282,
     });
 
     // Create envelope follower and connect it between vocal slope and final ring mod
@@ -243,20 +287,64 @@ export function createVocoderSystem(
       frequencies[i],
       vocalOutputs[i],
       finalRingMod.fields.audioInput1.location, // Vocal side of final ring mod
-      1400, // X position for envelope follower components
+      rowStart, // X position for envelope follower components
       rowY // Y position for this row
     );
 
     // Connect carrier slope to final ring modulator (carrier side)
-    t.create("audioConnection", {
+    t.create("desktopAudioCable", {
       fromSocket: carrierSlope.fields.audioOutput.location,
       toSocket: finalRingMod.fields.audioInput2.location,
     });
 
     // Connect final ring modulator to centroid channel
-    t.create("audioConnection", {
+    t.create("desktopAudioCable", {
       fromSocket: finalRingMod.fields.audioOutput.location,
       toSocket: channels[i].fields.audioInput.location,
     });
   }
+
+  const curveX =
+    splitterSize * Math.floor(Math.cbrt(bandCount)) +
+    (bandCount / numberOfRows) * 710;
+
+  // Create Curve device with high shelf at 863Hz and 26dB
+  const curve = t.create("curve", {
+    displayName: "Vocoder Output EQ",
+    positionX: curveX,
+    positionY: baseY,
+    highShelf: {
+      centerFrequencyHz: 863,
+      gainDb: 26,
+      isEnabled: true,
+    },
+  });
+
+  // Create Gravity (compressor)
+  const gravity = t.create("gravity", {
+    displayName: "Vocoder Compressor",
+    positionX: curveX + 550,
+    positionY: baseY,
+  });
+
+  // Create Mixer Channel
+  const mixerChannel = t.create("mixerChannel", {});
+
+  // Connect Centroid output to Curve input
+  t.create("desktopAudioCable", {
+    fromSocket: centroid.fields.audioOutput.location,
+    toSocket: curve.fields.audioInput.location,
+  });
+
+  // Connect Curve output to Gravity input
+  t.create("desktopAudioCable", {
+    fromSocket: curve.fields.audioOutput.location,
+    toSocket: gravity.fields.audioInput.location,
+  });
+
+  // Connect Gravity output to Mixer Channel input
+  t.create("desktopAudioCable", {
+    fromSocket: gravity.fields.audioOutput.location,
+    toSocket: mixerChannel.fields.audioInput.location,
+  });
 }

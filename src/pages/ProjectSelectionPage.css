@@ -1,0 +1,275 @@
+.project-selection-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #333;
+}
+
+.project-selection-header h1 {
+  color: #646cff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.logout-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.project-selection-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.project-selection-card {
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #333;
+}
+
+.project-selection-info {
+  color: #ccc;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.projects-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.projects-loading p {
+  color: #888;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #333;
+  border-top-color: #646cff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.projects-error {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  border-radius: 8px;
+}
+
+.projects-error p {
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #ff6b6b;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: #ff5252;
+}
+
+.project-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.new-project-btn {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #646cff;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.new-project-btn:hover {
+  background: #5a52e0;
+  transform: translateY(-1px);
+}
+
+.new-project-btn:disabled {
+  background: #444;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dropdown-container {
+  flex: 1;
+  position: relative;
+}
+
+.existing-project-btn {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #646cff;
+  border-radius: 8px;
+  background: transparent;
+  color: #646cff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.existing-project-btn:hover {
+  background: rgba(100, 108, 255, 0.1);
+}
+
+.existing-project-btn:disabled {
+  border-color: #444;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.projects-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.dropdown-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: #888;
+}
+
+.projects-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.projects-list li {
+  margin: 0;
+}
+
+.project-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.project-item:hover {
+  background: rgba(100, 108, 255, 0.2);
+}
+
+.show-more-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-top: 1px solid #333;
+  background: rgba(100, 108, 255, 0.1);
+  color: #646cff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.show-more-btn:hover {
+  background: rgba(100, 108, 255, 0.2);
+}
+
+.show-more-btn:disabled {
+  color: #666;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .project-selection-header {
+    padding: 1rem;
+  }
+
+  .project-selection-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .project-selection-content {
+    padding: 1rem;
+  }
+
+  .project-buttons {
+    flex-direction: column;
+  }
+
+  .projects-dropdown {
+    max-height: 300px;
+  }
+}

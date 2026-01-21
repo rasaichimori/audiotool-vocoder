@@ -74,6 +74,7 @@
 
 .input-group {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -410,7 +411,8 @@
   white-space: nowrap;
 }
 
-.bands-dropdown {
+.bands-dropdown,
+.project-select {
   padding: 0.5rem;
   border: 1px solid #333;
   border-radius: 6px;
@@ -420,10 +422,138 @@
   min-width: 80px;
 }
 
-.bands-dropdown:focus {
+.project-select {
+  flex: 1;
+  padding: 0.75rem;
+}
+
+.project-select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.bands-dropdown:focus,
+.project-select:focus {
   outline: none;
   border-color: #646cff;
   box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.project-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-projects {
+  flex: 1;
+  padding: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+.error-projects {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  color: #ff6b6b;
+}
+
+.error-projects .retry-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.new-project-btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid #646cff;
+  border-radius: 6px;
+  background: transparent;
+  color: #646cff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.new-project-btn:hover {
+  background: rgba(100, 108, 255, 0.1);
+}
+
+.new-project-btn:disabled {
+  border-color: #444;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.new-project-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background: rgba(100, 108, 255, 0.1);
+  border: 1px solid #646cff;
+  border-radius: 6px;
+}
+
+.new-project-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.new-project-form input:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.new-project-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.create-project-btn {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #2ecc71;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-project-btn:hover {
+  background: #27ae60;
+}
+
+.create-project-btn:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  border-color: #888;
+  color: #fff;
 }
 
 .create-vocoder-btn {
