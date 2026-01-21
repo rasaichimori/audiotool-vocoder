@@ -16,7 +16,7 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
   const [isConnecting, setIsConnecting] = useState(true)
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isCreatingVocoder, setIsCreatingVocoder] = useState(false)
-  const [bandCount, setBandCount] = useState<number>(27)
+  const [bandCount, setBandCount] = useState<number>(9)
   const hasStartedConnecting = useRef(false)
 
   useEffect(() => {

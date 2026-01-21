@@ -238,6 +238,97 @@ export function createVocoderSystem(
     toSocket: carrierSplitters[0].fields.audioInput.location,
   });
 
+  // Create audio track for the vocal input
+  const audioTrack = t.create("audioTrack", {
+    player: audioDevice.location,
+    orderAmongTracks: getNextTrackOrder(t),
+  });
+  // Inside a nexus.modify callback (where t is the transaction builder)
+  const sampleName = "samples/23de36ca-7b7e-5738-982e-dce15530f7f9";
+  const durationTicks = 15360 * 12; // adjust as needed
+
+  // 1. Create the sample entity
+  const sampleEntity = t.create("sample", {
+    sampleName: sampleName,
+  });
+
+  // 2. Create the automation collection for playback envelope
+  const collectionEntity = t.create("automationCollection", {});
+
+  // 3. Add start and end automation events
+  t.create("automationEvent", {
+    collection: collectionEntity.location,
+    positionTicks: 0,
+    value: 0,
+    slope: 0,
+    interpolation: 2,
+  });
+
+  t.create("automationEvent", {
+    collection: collectionEntity.location,
+    positionTicks: durationTicks,
+    value: 1,
+    slope: 0,
+    interpolation: 2,
+  });
+
+  // 4. Create the audio region itself
+  t.create("audioRegion", {
+    track: audioTrack.location, // reference to an existing audio track
+    playbackAutomationCollection: collectionEntity.location,
+    sample: sampleEntity.location,
+    region: {
+      positionTicks: 0,
+      durationTicks: durationTicks,
+      loopDurationTicks: durationTicks,
+      loopOffsetTicks: 0,
+      collectionOffsetTicks: 0,
+    },
+  });
+
+  // Create note track for the carrier synth
+  const noteTrack = t.create("noteTrack", {
+    player: heisenberg.location,
+    orderAmongTracks: getNextTrackOrder(t),
+  });
+
+  // Create a note collection for the chord
+  const noteCollection = t.create("noteCollection", {});
+
+  // Create the three notes of the D minor chord (D4, F4, A4)
+  // All notes start at position 0 and last 8 bars (30720 ticks)
+  t.create("note", {
+    collection: noteCollection.location,
+    positionTicks: 0,
+    durationTicks: 30720 * 4, // 8 bars
+    pitch: 62, // D4
+  });
+
+  t.create("note", {
+    collection: noteCollection.location,
+    positionTicks: 0,
+    durationTicks: 30720 * 4, // 8 bars
+    pitch: 65, // F4
+  });
+
+  t.create("note", {
+    collection: noteCollection.location,
+    positionTicks: 0,
+    durationTicks: 30720 * 4, // 8 bars
+    pitch: 69, // A4
+  });
+
+  // Create the note region on the track
+  t.create("noteRegion", {
+    track: noteTrack.location,
+    collection: noteCollection.location,
+    region: {
+      positionTicks: 0,
+      durationTicks: 30720 * 4, // 8 bars
+      loopDurationTicks: 30720 * 4, // 8 bars (no looping)
+    },
+  });
+
   // Create centroid for final mixing (far right)
   const { centroid, channels } = createCentroidWithChannels(
     t,
@@ -306,13 +397,14 @@ export function createVocoderSystem(
 
   const curveX =
     splitterSize * Math.floor(Math.cbrt(bandCount)) +
-    (bandCount / numberOfRows) * 710;
+    Math.floor(bandCount / numberOfRows) * 710;
 
   // Create Curve device with high shelf at 863Hz and 26dB
   const curve = t.create("curve", {
     displayName: "Vocoder Output EQ",
     positionX: curveX,
     positionY: baseY,
+    gainDb: -5,
     highShelf: {
       centerFrequencyHz: 863,
       gainDb: 26,
@@ -348,3 +440,19 @@ export function createVocoderSystem(
     toSocket: mixerChannel.fields.audioInput.location,
   });
 }
+
+export const getNextTrackOrder = (t: SafeTransactionBuilder) => {
+  const trackEntities = t.entities
+    .ofTypes("audioTrack", "noteTrack", "patternTrack", "automationTrack")
+    .get();
+
+  return (
+    (trackEntities.length > 0
+      ? Math.max(
+          ...trackEntities.map((entity) => entity.fields.orderAmongTracks.value)
+        )
+      : 0) +
+    Math.random() * 50 +
+    50
+  );
+};
