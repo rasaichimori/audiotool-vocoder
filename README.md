@@ -1,20 +1,17 @@
-# Audiotool Nexus App
+# Audiotool Vocoder Generator
 
-A modern React application built with the Audiotool Nexus SDK for real-time collaborative audio document editing.
+A web app that creates multi-band vocoder systems directly in your Audiotool projects using the Nexus SDK.
 
-## Features
+## What It Does
 
-- **🔐 Authentication**: Personal Access Token (PAT) authentication with the Audiotool platform
-- **📄 Document Management**: Create and manage synced documents in online/offline modes
-- **🎵 Audio Entity Creation**: Create audio effects, oscillators, and other music elements
-- **🌐 API Integration**: Full access to Audiotool services (projects, users, samples, presets, etc.)
-- **📱 Responsive Design**: Modern, mobile-friendly interface
-- **⚡ Real-time Sync**: Live collaboration when connected to online projects
+This tool generates a complete vocoder signal chain inside Audiotool with a configurable number of frequency bands (3–50). Each vocoder includes:
 
-## Prerequisites
-
-1. **Personal Access Token**: Get your PAT from [Audiotool DEV](https://rpc.audiotool.com/dev/)
-2. **Nexus SDK**: The app includes the Audiotool Nexus SDK package
+- **Dual splitter trees** — One for the vocal/modulator input, one for the carrier signal
+- **Per-band processing** — Each band gets its own filter (Slope), envelope follower, and ring modulator
+- **Exponential frequency distribution** — Bands are logarithmically spaced from 20Hz to 10kHz
+- **Carrier synth** — A Heisenberg synthesizer pre-configured with a rich harmonic sound
+- **Vocal input** — An AudioDevice with a sample region ready for your audio
+- **Output chain** — Centroid mixer → Curve EQ (high shelf at 863Hz) → Gravity compressor → Mixer channel
 
 ## Quick Start
 
@@ -24,119 +21,56 @@ A modern React application built with the Audiotool Nexus SDK for real-time coll
    npm install
    ```
 
-2. **Start the development server**:
+2. **Start the dev server**:
 
    ```bash
    npm run dev
    ```
 
-3. **Open your browser** and navigate to the displayed URL (usually http://localhost:5173)
+   Make sure that you are running it locally on http://127.0.0.1:5174 for it to work
 
-4. **Enter your PAT** in the authentication section
+3. **Log in** with you audiotool account
 
-5. **Choose connection mode**:
-   - **Offline Mode**: Local development without persistence
-   - **Online Mode**: Connect to a real Audiotool project for live collaboration
+4. **Select a project** from your Audiotool account
 
-## Usage
+5. **Configure the vocoder**:
+   - Adjust the band count with the knob (3–50 bands)
+   - Optionally set the X/Y position in the project
+6. **Click "Create Vocoder"** — the system is generated in your project
 
-### Authentication
-
-1. Visit [Audiotool DEV](https://rpc.audiotool.com/dev/) to generate a Personal Access Token
-2. Enter your PAT in the app (it will be stored in localStorage)
-
-### Document Connection
-
-- **Offline Mode**: Perfect for testing and development
-- **Online Mode**: Enter a project URL like `https://beta.audiotool.com/studio?project=abc123`
-
-### Creating Audio Elements
-
-Once connected, you can:
-
-- Create delay effects with configurable parameters
-- Add oscillators with frequency and waveform settings
-- Query all entities in the document
-- Modify entity properties in real-time
-
-### API Services
-
-The app demonstrates various Audiotool API services:
-
-- **User Service**: Get current user information
-- **Project Service**: List your projects
-- **Sample Service**: Search the sample library
-- **Additional APIs**: Genre, preset, track, comment, favorite, and event services
+7. **Open in Audiotool** to see and use the vocoder
 
 ## Project Structure
 
 ```
 src/
-├── App.jsx              # Main application component
-├── App.css              # Application styles
+├── App.tsx                 # App routing (login → project selection → vocoder)
+├── pages/
+│   ├── LoginPage.tsx       # PAT authentication
+│   ├── ProjectSelectionPage.tsx  # Project picker
+│   └── VocoderPage.tsx     # Main vocoder creation UI
 ├── components/
-│   └── ApiPanel.jsx     # API service demonstration panel
-└── main.jsx             # Application entry point
+│   └── Knob.tsx            # Band count control
+├── hooks/
+│   ├── useLoginStatus.ts   # Auth state management
+│   └── useProjects.ts      # Project fetching
+├── vocoderCreation.ts      # Vocoder signal chain generation
+└── sceneCreation.ts        # Helper entity creation functions
 ```
 
-## Key Technologies
+## Tech Stack
 
-- **React 19**: Modern React with hooks
-- **Vite**: Fast build tool and dev server
-- **Audiotool Nexus SDK**: Official Audiotool collaboration SDK
-- **GRPC/Connect**: For API communication
-- **Modern CSS**: Responsive design with CSS Grid and Flexbox
-
-## API Documentation
-
-For detailed API documentation, visit:
-
-- [Audiotool DEV Portal](https://rpc.audiotool.com/dev/)
-- Generated protobuf definitions
-- GRPC UI for testing
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
-```
+- **React 19** + **TypeScript**
+- **Vite** for development/build
+- **Audiotool Nexus SDK** for real-time project sync
 
 ## Notes
 
-- The PAT is stored in localStorage for convenience
-- In offline mode, all changes are discarded on page reload
-- Online mode requires a valid Audiotool project URL
-- Check the browser console for detailed API responses
-- The app can currently only create one synced document per tab
+- The SDK only allows one synced document per browser tab — the app reloads when switching projects
+- Higher band counts (35+) create complex systems; use with caution
+- The generated vocoder uses a default sample; replace it with your own audio in Audiotool
 
-## Troubleshooting
-
-1. **Authentication Issues**: Ensure your PAT is valid and has the necessary permissions
-2. **Connection Problems**: Check your internet connection for online mode
-3. **API Errors**: Verify your PAT has access to the required services
-4. **Console Errors**: Check the browser console for detailed error messages
-5. **Dependency Issues**: If you see `@bufbuild/protobuf` import errors:
-   - Clear Vite cache: `rm -rf node_modules/.vite`
-   - Restart the dev server: `npm run dev`
-   - Ensure all dependencies are installed: `npm install`
-6. **SDK Loading Issues**: The app uses lazy loading for the Nexus SDK to handle import issues gracefully
-
-## Learn More
+## Links
 
 - [Audiotool Platform](https://www.audiotool.com/)
-- [Nexus SDK Documentation](https://rpc.audiotool.com/dev/)
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vitejs.dev/)
+- [Audiotool DEV Portal](https://developer.audiotool.com/)
