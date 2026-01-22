@@ -4,85 +4,177 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative background elements */
+.login-page::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 50px,
+      rgba(191, 255, 0, 0.03) 50px,
+      rgba(191, 255, 0, 0.03) 100px
+    );
+  animation: slide-bg 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes slide-bg {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(100px, 100px); }
 }
 
 .login-card {
-  max-width: 420px;
+  max-width: 480px;
   width: 100%;
-  padding: 3rem 2rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #333;
+  padding: 3rem 2.5rem;
+  background: var(--sk-bg-card);
+  border: 4px solid var(--sk-border-strong);
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Top accent bar */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  height: 8px;
+  background: linear-gradient(90deg, 
+    var(--sk-neon-lime) 0%, 
+    var(--sk-neon-lime) 33%, 
+    var(--sk-neon-pink) 33%, 
+    var(--sk-neon-pink) 66%, 
+    var(--sk-neon-orange) 66%, 
+    var(--sk-neon-orange) 100%
+  );
+}
+
+/* Bottom decorative stripe */
+.login-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--sk-bg-dark),
+    var(--sk-bg-dark) 8px,
+    var(--sk-border-strong) 8px,
+    var(--sk-border-strong) 16px
+  );
+  opacity: 0.5;
 }
 
 .login-card h1 {
-  color: #646cff;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  font-size: 3rem;
+  color: var(--sk-neon-lime);
+  margin: 0 0 0.5rem 0;
+  text-shadow: 
+    3px 3px 0 var(--sk-neon-pink),
+    6px 6px 0 var(--sk-bg-dark);
+  letter-spacing: 0.08em;
+  animation: neon-flicker 3s ease-in-out infinite;
+  position: relative;
 }
 
 .login-description {
-  color: #ccc;
+  color: var(--sk-text-secondary);
   font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
 }
 
 .login-btn {
   width: 100%;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 8px;
-  background: #646cff;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 1.25rem 2rem;
+  background: var(--sk-neon-lime);
+  color: var(--sk-bg-dark);
+  border: 4px solid var(--sk-bg-dark);
+    font-family: 'Space Mono', monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 6px 6px 0 var(--sk-bg-dark);
+  transition: all 0.15s ease;
+  z-index: 1;
 }
 
 .login-btn:hover {
-  background: #5a52e0;
-  transform: translateY(-2px);
+  transform: translate(-4px, -4px);
+  box-shadow: 10px 10px 0 var(--sk-bg-dark);
+  background: var(--sk-neon-yellow);
 }
 
 .login-btn:active {
-  transform: translateY(0);
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0 var(--sk-bg-dark);
 }
 
+/* Error state */
 .login-card-error {
-  border-color: #ff6b6b;
+  border-color: var(--sk-error);
+}
+
+.login-card-error::before {
+  background: var(--sk-error);
 }
 
 .login-error-message {
-  color: #ff6b6b;
+  color: var(--sk-error);
+  padding: 1rem;
   margin-bottom: 1.5rem;
+  background: rgba(255, 71, 87, 0.1);
+  border: 2px solid var(--sk-error);
+  font-weight: 700;
 }
 
+/* Loading state */
 .login-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  padding: 2rem 0;
 }
 
 .login-loading p {
-  color: #888;
+  color: var(--sk-text-secondary);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #333;
-  border-top-color: #646cff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-card h1 {
+    font-size: 2.5rem;
+  }
+  
+  .login-btn {
+    font-size: 1.25rem;
+    padding: 1rem 1.5rem;
   }
 }

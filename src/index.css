@@ -1,11 +1,33 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Skater color palette */
+  --sk-bg-dark: #0a0a0a;
+  --sk-bg-card: #151515;
+  --sk-bg-elevated: #1a1a1a;
+  
+  --sk-neon-lime: #BFFF00;
+  --sk-neon-pink: #FF2D95;
+  --sk-neon-orange: #FF6B35;
+  --sk-neon-cyan: #00FFFF;
+  --sk-neon-yellow: #FFE600;
+  
+  --sk-text-primary: #f0f0f0;
+  --sk-text-secondary: #888888;
+  --sk-text-muted: #555555;
+  
+  --sk-border: #333333;
+  --sk-border-strong: #444444;
+  
+  --sk-error: #FF4757;
+  --sk-success: #2ecc71;
+  
+  /* Typography */
+  font-family: 'Space Mono', monospace;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: var(--sk-text-primary);
+  background-color: var(--sk-bg-dark);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +35,134 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+* {
+  box-sizing: border-box;
 }
-a:hover {
-  color: #535bf2;
+
+/* Checkerboard pattern utility */
+.checkerboard-bg {
+  background-image: 
+    linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+    linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at 20% 0%, rgba(191, 255, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(255, 45, 149, 0.08) 0%, transparent 50%),
+    var(--sk-bg-dark);
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Mono', monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 h1 {
-  font-size: 3.2em;
+  font-size: 3rem;
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+h2 {
+  font-size: 2rem;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+a {
+  font-weight: 700;
+  color: var(--sk-neon-lime);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--sk-neon-pink);
+  text-decoration: underline;
+  text-decoration-style: wavy;
+}
+
+/* Base button styles */
+button {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 3px solid transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--sk-neon-lime);
+  color: var(--sk-bg-dark);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sk-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sk-border-strong);
+  border: 2px solid var(--sk-bg-dark);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sk-neon-lime);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 3px solid var(--sk-neon-lime);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes skate-slide {
+  0% { transform: translateX(-100%) skewX(-5deg); }
+  100% { transform: translateX(0) skewX(0deg); }
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+  75% { opacity: 0.95; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-1deg); }
+  75% { transform: translateX(5px) rotate(1deg); }
 }

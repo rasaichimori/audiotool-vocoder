@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { AudiotoolClient, SyncedDocument } from '@audiotool/nexus'
 import { createVocoderSystem } from '../vocoderCreation'
+import { Knob } from '../components/Knob'
 import './VocoderPage.css'
 
 interface VocoderPageProps {
@@ -19,6 +20,7 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
   const [bandCount, setBandCount] = useState<number>(9)
   const [positionX, setPositionX] = useState<number>(0)
   const [positionY, setPositionY] = useState<number>(0)
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const hasStartedConnecting = useRef(false)
 
   useEffect(() => {
@@ -135,55 +137,69 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
         </div>
 
         <div className="vocoder-card">
-          <h2>Multi-Band Vocoder Creation</h2>
+          <h2>Multi-Band Vocoder</h2>
 
           <div className="vocoder-controls">
-            <div className="control-group">
-              <label htmlFor="band-count">Number of Bands:</label>
-              <select
-                id="band-count"
+            {/* Main knob control */}
+            <div className="knob-section">
+              <div className="knob-sticker">
+                <img src="/danger-zone.png" alt="Knob Sticker" />
+              </div>  
+              <Knob
                 value={bandCount}
-                onChange={(e) => setBandCount(Number(e.target.value))}
+                min={3}
+                max={50}
+                onChange={setBandCount}
+                label="Bands"
                 disabled={isCreatingVocoder}
-                className="bands-dropdown"
-              >
-                {Array.from({ length: 25 }, (_, i) => i + 3).map(count => (
-                  <option key={count} value={count}>
-                    {count} bands
-                  </option>
-                ))}
-              </select>
+                danger={bandCount > 35}
+              />
             </div>
 
-            <div className="position-inputs">
-              <div className="control-group">
-                <label htmlFor="position-x">X:</label>
-                <input
-                  id="position-x"
-                  type="number"
-                  value={positionX}
-                  onChange={(e) => setPositionX(Number(e.target.value))}
-                  disabled={isCreatingVocoder}
-                  className="position-input"
-                />
+            {/* Advanced options toggle */}
+            <button 
+              className="advanced-toggle"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              type="button"
+            >
+              <span className={`toggle-arrow ${showAdvanced ? 'open' : ''}`}>▶</span>
+              Position
+            </button>
+
+            {/* Collapsible position inputs */}
+            {showAdvanced && (
+              <div className="position-section">
+                <div className="position-inputs">
+                  <div className="position-group">
+                    <label htmlFor="position-x">X</label>
+                    <input
+                      id="position-x"
+                      type="number"
+                      value={positionX}
+                      onChange={(e) => setPositionX(Number(e.target.value))}
+                      disabled={isCreatingVocoder}
+                      className="position-input"
+                    />
+                  </div>
+                  <div className="position-group">
+                    <label htmlFor="position-y">Y</label>
+                    <input
+                      id="position-y"
+                      type="number"
+                      value={positionY}
+                      onChange={(e) => setPositionY(Number(e.target.value))}
+                      disabled={isCreatingVocoder}
+                      className="position-input"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="control-group">
-                <label htmlFor="position-y">Y:</label>
-                <input
-                  id="position-y"
-                  type="number"
-                  value={positionY}
-                  onChange={(e) => setPositionY(Number(e.target.value))}
-                  disabled={isCreatingVocoder}
-                  className="position-input"
-                />
-              </div>
-            </div>
+            )}
 
             <button
               onClick={createVocoder}
               disabled={isCreatingVocoder || !document}
-              className="create-vocoder-btn"
+              className={`create-vocoder-btn ${bandCount > 35 ? 'danger' : ''}`}
             >
               {isCreatingVocoder ? `Creating ${bandCount}-Band Vocoder...` : `Create ${bandCount}-Band Vocoder`}
             </button>
