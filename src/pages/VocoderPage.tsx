@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { AudiotoolClient, SyncedDocument } from '@audiotool/nexus'
-import { createVocoderSystem } from '../vocoderCreation'
+import { createVocoderSystem, centroidHeight } from '../vocoderCreation'
 import { Knob } from '../components/Knob'
 import './VocoderPage.css'
 
@@ -17,6 +17,7 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
   const [isConnecting, setIsConnecting] = useState(true)
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isCreatingVocoder, setIsCreatingVocoder] = useState(false)
+  const [vocoderCreated, setVocoderCreated] = useState(false)
   const [bandCount, setBandCount] = useState<number>(9)
   const [positionX, setPositionX] = useState<number>(0)
   const [positionY, setPositionY] = useState<number>(0)
@@ -66,6 +67,8 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
     })
     console.log(`Created ${bandCount}-band vocoder at (${positionX}, ${positionY}) with dual splitter trees and centroid output`)
     setIsCreatingVocoder(false)
+    setVocoderCreated(true)
+    setPositionY(positionY + centroidHeight + 700)
   }
 
   const handleBack = () => {
@@ -174,9 +177,9 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
                     <label htmlFor="position-x">X</label>
                     <input
                       id="position-x"
-                      type="number"
+                      type="text"
                       value={positionX}
-                      onChange={(e) => setPositionX(Number(e.target.value))}
+                      onChange={(e) => setPositionX(Number(e.target.value) || 0)}
                       disabled={isCreatingVocoder}
                       className="position-input"
                     />
@@ -185,9 +188,9 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
                     <label htmlFor="position-y">Y</label>
                     <input
                       id="position-y"
-                      type="number"
+                      type="text"
                       value={positionY}
-                      onChange={(e) => setPositionY(Number(e.target.value))}
+                      onChange={(e) => setPositionY(Number(e.target.value) || 0)}
                       disabled={isCreatingVocoder}
                       className="position-input"
                     />
@@ -196,12 +199,22 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
               </div>
             )}
 
+            {vocoderCreated && (
+              <div className="vocoder-success-message">
+                Vocoder added! Check the project!
+              </div>
+            )}
+
             <button
               onClick={createVocoder}
               disabled={isCreatingVocoder || !document}
               className={`create-vocoder-btn ${bandCount > 35 ? 'danger' : ''}`}
             >
-              {isCreatingVocoder ? `Creating ${bandCount}-Band Vocoder...` : `Create ${bandCount}-Band Vocoder`}
+              {isCreatingVocoder 
+                ? `Creating ${bandCount}-Band Vocoder...` 
+                : vocoderCreated 
+                  ? `Create Another ${bandCount}-Band Vocoder`
+                  : `Create ${bandCount}-Band Vocoder`}
             </button>
           </div>
         </div>

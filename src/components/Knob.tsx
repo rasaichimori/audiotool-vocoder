@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import './Knob.css'
 
 interface KnobProps {
@@ -15,6 +15,10 @@ export const Knob = ({ value, min, max, onChange, label, disabled, danger }: Kno
   const knobRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const dragStartRef = useRef<{ y: number; startValue: number } | null>(null)
+  const valueRef = useRef(value)
+  
+  // Keep valueRef in sync with value prop
+  valueRef.current = value
 
   // Convert value to rotation angle (-135° to 135°, 270° total range)
   const valueToAngle = (val: number) => {
@@ -52,13 +56,24 @@ export const Knob = ({ value, min, max, onChange, label, disabled, danger }: Kno
     ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
   }
 
-  const handleWheel = (e: React.WheelEvent) => {
+  // Use non-passive wheel listener to allow preventDefault
+  const handleWheel = useCallback((e: WheelEvent) => {
     if (disabled) return
     e.preventDefault()
     const delta = e.deltaY > 0 ? -1 : 1
-    const newValue = Math.min(max, Math.max(min, value + delta))
+    const newValue = Math.min(max, Math.max(min, valueRef.current + delta))
     onChange(newValue)
-  }
+  }, [disabled, min, max, onChange])
+
+  useEffect(() => {
+    const knobElement = knobRef.current
+    if (!knobElement) return
+
+    knobElement.addEventListener('wheel', handleWheel, { passive: false })
+    return () => {
+      knobElement.removeEventListener('wheel', handleWheel)
+    }
+  }, [handleWheel])
 
   return (
     <div className={`knob-container ${disabled ? 'disabled' : ''} ${danger ? 'danger' : ''}`}>
@@ -70,7 +85,6 @@ export const Knob = ({ value, min, max, onChange, label, disabled, danger }: Kno
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onWheel={handleWheel}
         role="slider"
         aria-valuemin={min}
         aria-valuemax={max}

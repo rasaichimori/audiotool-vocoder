@@ -59,7 +59,7 @@ export function generateFrequencies(
   return frequencies;
 }
 
-const centroidHeight = 500;
+export const centroidHeight = 500;
 const splitterSize = 180;
 const numberOfRows = 9;
 
@@ -172,6 +172,7 @@ export function createVocoderSystem(
   baseX: number = 0,
   baseY: number = 0
 ): void {
+  console.log("Creating vocoder system with band count:", bandCount);
   // Create vocal splitter tree (top)
   const { splitters: vocalSplitters, outputs: vocalOutputs } =
     createInputSplitterTree(
