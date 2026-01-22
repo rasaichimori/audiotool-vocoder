@@ -21,7 +21,7 @@ export const useLoginStatus = (): UseLoginStatusResult => {
     try {
       const status = await getLoginStatus({
         clientId,
-        redirectUrl: window.location.origin + "/",
+        redirectUrl: window.location.origin + import.meta.env.BASE_URL,
         scope: "project:write",
       });
 
