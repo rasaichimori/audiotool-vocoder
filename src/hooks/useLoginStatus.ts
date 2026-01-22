@@ -26,6 +26,7 @@ export const useLoginStatus = (): UseLoginStatusResult => {
         redirectUrl: window.location.origin + import.meta.env.BASE_URL,
         scope: "project:write",
       });
+      console.log(redirectUrl);
 
       if (!isMountedRef.current) return;
 
