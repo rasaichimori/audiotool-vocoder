@@ -146,8 +146,8 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
             {/* Main knob control */}
             <div className="knob-section">
               <div className="knob-sticker">
-                <img src="/danger-zone.png" alt="Knob Sticker" />
-              </div>  
+                <img src={`${import.meta.env.BASE_URL}danger-zone.png`} alt="Knob Sticker" />
+              </div>
               <Knob
                 value={bandCount}
                 min={3}
@@ -160,7 +160,7 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
             </div>
 
             {/* Advanced options toggle */}
-            <button 
+            <button
               className="advanced-toggle"
               onClick={() => setShowAdvanced(!showAdvanced)}
               type="button"
@@ -210,9 +210,9 @@ export function VocoderPage({ client, projectName, projectDisplayName, onBack, o
               disabled={isCreatingVocoder || !document}
               className={`create-vocoder-btn ${bandCount > 35 ? 'danger' : ''}`}
             >
-              {isCreatingVocoder 
-                ? `Creating ${bandCount}-Band Vocoder...` 
-                : vocoderCreated 
+              {isCreatingVocoder
+                ? `Creating ${bandCount}-Band Vocoder...`
+                : vocoderCreated
                   ? `Create Another ${bandCount}-Band Vocoder`
                   : `Create ${bandCount}-Band Vocoder`}
             </button>
