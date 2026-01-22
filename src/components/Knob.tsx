@@ -40,7 +40,7 @@ export const Knob = ({ value, min, max, onChange, label, disabled, danger }: Kno
     if (!isDragging || !dragStartRef.current || disabled) return
     
     const deltaY = dragStartRef.current.y - e.clientY
-    const sensitivity = (max - min) / 150 // pixels to traverse full range
+    const sensitivity = (max - min) / 500 // pixels to traverse full range
     const newValue = Math.round(
       Math.min(max, Math.max(min, dragStartRef.current.startValue + deltaY * sensitivity))
     )
