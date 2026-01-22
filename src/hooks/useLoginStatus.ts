@@ -14,6 +14,8 @@ export const useLoginStatus = (): UseLoginStatusResult => {
   const isMountedRef = useRef(true);
   const clientId = import.meta.env.VITE_AT_CLIENT_ID;
 
+  console.log('clientId', clientId);
+
   const checkLogin = useCallback(async () => {
     if (!isMountedRef.current) return;
     setState({ case: "loading" });
